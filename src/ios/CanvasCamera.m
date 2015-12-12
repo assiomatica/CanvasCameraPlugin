@@ -94,12 +94,22 @@ typedef enum {
     
     // add support for options (fps, capture quality, capture format, etc.)
     self.session = [[AVCaptureSession alloc] init];
-    self.session.sessionPreset = AVCaptureSessionPresetPhoto;//AVCaptureSessionPreset352x288;
+    self.session.sessionPreset = AVCaptureSessionPreset352x288; // AVCaptureSessionPresetPhoto;//;
     
     self.device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     self.input = [AVCaptureDeviceInput deviceInputWithDevice:self.device error:nil];
     
     self.output = [[AVCaptureVideoDataOutput alloc] init];
+    
+    
+    AVCaptureConnection *conn = [self.output connectionWithMediaType:AVMediaTypeVideo];
+    
+    if (conn.isVideoMinFrameDurationSupported)
+        conn.videoMinFrameDuration = CMTimeMake(1, 5);
+    if (conn.isVideoMaxFrameDurationSupported)
+        conn.videoMaxFrameDuration = CMTimeMake(1, 15);
+    
+    
     self.output.videoSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
     
     self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
